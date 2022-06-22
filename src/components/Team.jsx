@@ -15,7 +15,7 @@ const Team = () => {
               <img src={nemo} alt="fish" />
             </div>
             <h4 className="text-border">Founder</h4>
-            <p>Project director and marketer. Lover of fishes.</p>
+            <p>Project director and marketer. Lover of fish.</p>
           </div>
           <div className="team__column">
             <h3 className="text-border">ManaMoon</h3>
@@ -23,7 +23,7 @@ const Team = () => {
               <img src={nemo} alt="fish" />
             </div>
             <h4 className="text-border">Founder</h4>
-            <p>Project director and marketer. Lover of ducks.</p>
+            <p>Project director and marketer. Lover of fish.</p>
           </div>
           <div className="team__column">
             <h3 className="text-border">ManaMoon</h3>
@@ -31,7 +31,7 @@ const Team = () => {
               <img src={nemo} alt="fish" />
             </div>
             <h4 className="text-border">Founder</h4>
-            <p>Project director and marketer. Lover of ducks.</p>
+            <p>Project director and marketer. Lover of fish.</p>
           </div>
         </div>
       </div>

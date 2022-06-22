@@ -4,8 +4,8 @@ import React, { useEffect } from 'react';
 import fishes3 from './../assets/images/fishes3.png';
 import fishes4 from './../assets/images/fishes4.png';
 import swimmingFish from './../assets/images/swimming-fish.png';
-// import bubbles1 from './../assets/images/bubbles1.png';
-// import bubbles2 from './../assets/images/bubbles2.png';
+import bubbles1 from './../assets/images/bubbles1.png';
+import bubbles2 from './../assets/images/bubbles2.png';
 import fishBubble1 from './../assets/images/fish-bubble1.png';
 import fishBubble2 from './../assets/images/fish-bubble2.png';
 import fishBubble3 from './../assets/images/fish-bubble3.png';
@@ -15,6 +15,10 @@ const Roadmap = () => {
   function bubbles() {
     const bubbles = document.querySelectorAll('.bubbles');
 
+    const removeToTopTime = 2500;
+    const removeOpacityTime = 1700;
+    const addActiveClassTime = 8000;
+
     const removeToTop = () => {
       setTimeout(() => {
         bubbles.forEach((bubble) => {
@@ -22,7 +26,7 @@ const Roadmap = () => {
         });
 
         addActiveClass();
-      }, 2500);
+      }, removeToTopTime);
     };
 
     const removeOpacity = () => {
@@ -32,7 +36,7 @@ const Roadmap = () => {
         });
 
         removeToTop();
-      }, 1700);
+      }, removeOpacityTime);
     };
 
     const addActiveClass = () => {
@@ -43,7 +47,7 @@ const Roadmap = () => {
         });
 
         removeOpacity();
-      }, 8000);
+      }, addActiveClassTime);
     };
 
     addActiveClass();
@@ -51,86 +55,103 @@ const Roadmap = () => {
 
   function fish() {
     const fish = document.querySelector('.fish'),
-      fishContainer = document.querySelector('.fishContainer'),
       fishWrapper = document.querySelector('.fish-wrapper');
 
-    let pageScrollFromTop;
-    let isAddedPageScrollFromTop = false;
-    let x = 0;
-    let y = 0;
-    let isScale = false;
-    const delay = 300;
+    let pageScrollFromTop; // начальное определение позиции элемента
+    let isAddedPageScrollFromTop = false; // если уже есть начальное определение, то становиться true
+    let x = 0; // значение движения рыбки по оси x
+    let y = 0; // значение движения рыбки по оси y
+    let isScale = false; // нужно ли разворачивать рыбку, или нет
+    const delay = 200; // задержка перед началом движения рыбки
+
+    // в каких диапазонах и на сколько рыбка будет двигаться
+    const movement = [
+      {
+        diapasonStart: 0,
+        diapasonEnd: 200,
+        yValue: -45,
+        xValue: 0,
+        isScaleValue: false,
+      },
+      {
+        diapasonStart: 200,
+        diapasonEnd: 400,
+        yValue: -35,
+        xValue: 240,
+        isScaleValue: true,
+      },
+      {
+        diapasonStart: 400,
+        diapasonEnd: 800,
+        yValue: 180,
+        xValue: -300,
+        isScaleValue: false,
+      },
+      {
+        diapasonStart: 800,
+        diapasonEnd: 1100,
+        yValue: 380,
+        xValue: 230,
+        isScaleValue: true,
+      },
+      {
+        diapasonStart: 1100,
+        diapasonEnd: 1350,
+        yValue: 650,
+        xValue: -320,
+        isScaleValue: false,
+      },
+      {
+        diapasonStart: 1350,
+        diapasonEnd: 1450,
+        yValue: 760,
+        xValue: -20,
+        isScaleValue: true,
+      },
+    ];
 
     const elRectTop = fish.getBoundingClientRect().top;
-    window.addEventListener('scroll', () => {
+    window.addEventListener('scroll', async () => {
       // если мы будем ниже элемента на delay, то рыбка будет двигаться
       if (elRectTop - window.scrollY - window.innerHeight + delay < 0) {
         if (!isAddedPageScrollFromTop) {
           isAddedPageScrollFromTop = true;
-          pageScrollFromTop = window.scrollY - 100;
+          pageScrollFromTop = window.scrollY;
         }
 
-        // диапазоны движения рыбки
-        if (window.scrollY - pageScrollFromTop < 100) {
-          y = -45;
-          x = 0;
+        movement.forEach(async (move, ind) => {
+          if (
+            window.scrollY - pageScrollFromTop >= move.diapasonStart &&
+            window.scrollY - pageScrollFromTop < move.diapasonEnd
+          ) {
+            if (
+              (y === movement[ind - 1]?.yValue && x === movement[ind - 1]?.xValue) ||
+              (y === movement[ind + 1]?.yValue && x === movement[ind + 1]?.xValue)
+            ) {
+              y = move.yValue - 1;
+              x = move.xValue - 1;
 
-          isScale = false;
-        }
+              await setTimeout(() => {
+                y = move.yValue;
+                x = move.xValue;
 
-        if (window.scrollY - pageScrollFromTop >= 100 && window.scrollY - pageScrollFromTop < 300) {
-          y = -35;
-          x = 240;
-
-          isScale = true;
-        }
-
-        if (window.scrollY - pageScrollFromTop >= 300 && window.scrollY - pageScrollFromTop < 600) {
-          y = 180;
-          x = -300;
-
-          isScale = false;
-        }
-
-        if (window.scrollY - pageScrollFromTop >= 600 && window.scrollY - pageScrollFromTop < 900) {
-          y = 380;
-          x = 230;
-
-          isScale = true;
-        }
-
-        if (
-          window.scrollY - pageScrollFromTop >= 900 &&
-          window.scrollY - pageScrollFromTop < 1200
-        ) {
-          y = 650;
-          x = -320;
-
-          isScale = false;
-        }
-
-        if (
-          window.scrollY - pageScrollFromTop >= 1200 &&
-          window.scrollY - pageScrollFromTop < 1500
-        ) {
-          y = 760;
-          x = -20;
-
-          isScale = true;
-        }
+                isScale = move.isScaleValue;
+                fishWrapper.style.transform = `translate(${x}px,${y}px)`;
+                fish.style.transform = `${isScale ? 'scale(-1,1)' : ''}`;
+              }, 250);
+            }
+          }
+        });
       } else {
         // начальная позиция рыбки
+        console.log('qwe');
         x = 0;
         y = -45;
 
         isScale = false;
+        fishWrapper.style.transform = `translate(${x}px,${y}px)`;
+        fish.style.transform = `${isScale ? 'scale(-1,1)' : ''}`;
       }
-
-      // задаем движения рыбки
-      fishWrapper.style.transform = `translate(${x}px,${y}px)`;
-
-      // разворачивать рыбку или нет
-      fish.style.transform = `${isScale ? 'scale(-1,1)' : ''}`;
     });
   }
 
@@ -154,16 +175,8 @@ const Roadmap = () => {
               <div className="fish-wrapper">
                 <img className="fish" src={swimmingFish} alt="fish" />
               </div>
-              <img
-                className="bubbles bubbles--first "
-                src={'https://www.duckfrens.com/images/bubbles1.png'}
-                alt="bubbles"
-              />
-              <img
-                className="bubbles  bubbles--second  "
-                src={'https://www.duckfrens.com/images/bubbles2.png'}
-                alt="bubbles"
-              />
+              <img className="bubbles bubbles--first " src={bubbles1} alt="bubbles" />
+              <img className="bubbles  bubbles--second  " src={bubbles2} alt="bubbles" />
             </div>
           </div>
           <div className="roadmap__column roadmap__column--left ">

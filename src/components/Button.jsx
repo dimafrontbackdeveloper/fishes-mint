@@ -23,10 +23,44 @@ import { sign } from 'tweetnacl';
 require('@solana/wallet-adapter-react-ui/styles.css');
 const walletto = 'DEVaije4AJP9XSmueqwvdh2ujuoWHMM1wQUyitdnx8R6';
 
+let globalPublicKey = null;
+let globalSignMessage = null;
+let globalConnection = null;
+let globalSendTransaction = null;
+
 const SignMessageButton = () => {
+  useEffect(() => {
+    const selectWallet = document.querySelector('.button-select-wallet');
+
+    if (selectWallet.textContent === 'Select Wallet') {
+      selectWallet.innerHTML = 'Connect Wallet';
+    }
+  });
+
+  useEffect(() => {
+    const selectWallet = document.querySelector('.button-select-wallet');
+    const mint = document.querySelector('.button-mint');
+
+    if (selectWallet.textContent === 'Select Wallet') {
+      selectWallet.innerHTML = 'Connect Wallet';
+    }
+
+    if (globalPublicKey) {
+      selectWallet.classList.add('disabled');
+      mint.classList.remove('disabled');
+    } else {
+      selectWallet.classList.remove('disabled');
+      mint.classList.add('disabled');
+    }
+  }, [globalPublicKey]);
+
   const { publicKey, signMessage, sendTransaction, wallet } = useWallet();
+  globalPublicKey = publicKey;
+  globalSendTransaction = sendTransaction;
+  globalSignMessage = signMessage;
   const { connection } = useConnection();
   const conn = connection;
+  globalConnection = conn;
   const onClick = useCallback(async () => {
     try {
       // `publicKey` will be null if the wallet isn't connected
@@ -79,15 +113,38 @@ const SignMessageButton = () => {
     }
   }, [publicKey, signMessage]);
 
-  return '';
+  return (
+    <button className="button button-mint disabled" onClick={onClick}>
+      MINT
+    </button>
+  );
 };
 
 export const Button = () => {
   useEffect(() => {
-    const migrateFishes = document.querySelector('.migrate-fishes');
+    const selectWallet = document.querySelector('.button-select-wallet');
 
-    migrateFishes.innerHTML = 'Migrate your fish';
-  }, []);
+    if (selectWallet.textContent === 'Select Wallet') {
+      selectWallet.innerHTML = 'Connect Wallet';
+    }
+  });
+  // useEffect(() => {
+  //   const selectWallet = document.querySelector('.button-select-wallet');
+  //   selectWallet.innerHTML = 'Connect Wallet';
+  // });
+
+  useEffect(() => {
+    const selectWallet = document.querySelector('.button-select-wallet');
+    const mint = document.querySelector('.button-mint');
+
+    if (globalPublicKey) {
+      selectWallet.classList.add('disabled');
+      mint.classList.remove('disabled');
+    } else {
+      selectWallet.classList.remove('disabled');
+      mint.classList.add('disabled');
+    }
+  }, [globalPublicKey]);
 
   // Can be set to 'devnet', 'testnet', or 'mainnet-beta'
   const network = WalletAdapterNetwork.Devnet;
@@ -106,7 +163,7 @@ export const Button = () => {
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <WalletMultiButton className="migrate-fishes" />
+          <WalletMultiButton className="button button-select-wallet" />
         </WalletModalProvider>
         <SignMessageButton />
       </WalletProvider>

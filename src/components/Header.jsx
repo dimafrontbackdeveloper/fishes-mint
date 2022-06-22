@@ -1,83 +1,93 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // imgs
 import gull1 from './../assets/images/gull1.png';
 import gull2 from './../assets/images/gull2.png';
 import gull3 from './../assets/images/gull3.png';
-import logo from './../assets/images/logo.png';
+import logo from './../assets/images/logo.svg';
 import headerFish from './../assets/images/header-fish.png';
 import island from './../assets/images/island.png';
+import twitter from './../assets/images/twitter.svg';
+import magicElden from './../assets/images/magic-elden.svg';
+
 import { Button } from './Button';
+import axios from 'axios';
+import { useRandomInterval } from '../hooks/useRandomInterval';
+
+let countOfNftPrev = 0; // значение для обновления
 
 const Header = () => {
+  const maxNft = 3333; // максимальное количество nft
+  const minAdd = 3; // минимальное количества прибавления  nft
+  const maxAdd = 10; // максимальное количества прибавления  nft
+
+  const [countOfNft, setCountOfNft] = useState(0); // сколько рыб прибавляется
+  const [percentOfProgessBar, setPercentOfProgessBar] = useState(0); // заполнение прогресс-бара
+
+  // устанавливаем countOfNft при первом рендере
+  useEffect(async () => {
+    try {
+      const res = await axios.get('http://localhost:1337/api/timeouts');
+      console.log(res);
+
+      // устанавливаем начальное значение
+      if (res.status >= 200 && res.status < 300) {
+        const count = res.data.data[0].attributes.count;
+        setCountOfNft(count);
+
+        const percentNft = (count / maxNft) * 100;
+        setPercentOfProgessBar(percentNft);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
+  // устанавливаем countOfNft при интервале
+  useRandomInterval(async () => {
+    if (countOfNft < maxNft) {
+      setCountOfNft((prev) => {
+        const newValue = prev + Math.floor(Math.random() * (maxAdd - minAdd + 1) + minAdd);
+        countOfNftPrev = newValue;
+
+        const percentNft = (newValue / maxNft) * 100;
+        setPercentOfProgessBar(percentNft);
+
+        if (newValue >= maxNft) {
+          return maxNft;
+        }
+
+        return newValue;
+      });
+
+      const res = await axios.put('http://localhost:1337/api/timeouts/1', {
+        data: { count: countOfNftPrev },
+      });
+    } else {
+      setCountOfNft(maxNft);
+    }
+  }, ...[5000, 60000]);
+
   return (
     <header className="header">
       <div className="container">
         <img className="gull gull1" src={gull1} alt="gull" />
         <img className="gull gull2" src={gull2} alt="gull" />
         <img className="gull gull3" src={gull3} alt="gull" />
-        <div className="header__top d-f jc-sb ai-c">
-          <nav className="nav">
-            <ul className="d-f ai-c">
-              <li>
-                <a className="text-border" href="#">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a className="text-border" href="#">
-                  Mint
-                </a>
-              </li>
-              <li>
-                <a className="text-border burger" href="#">
-                  Social
-                </a>
-              </li>
-            </ul>
-          </nav>
+        <div className="header__top d-f fd-c">
           <ul className="social d-f ai-c">
             <li>
-              <a src="https://discord.com/invite/duckfrens" href="#">
-                <img
-                  src="https://www.duckfrens.com/_next/image?url=%2Fimages%2Fsocials%2FDiscord.svg&w=32&q=75"
-                  alt="discord"
-                />
-              </a>
-            </li>
-            <li>
               <a src="https://twitter.com/DuckFrens" href="#">
-                <img
-                  src="https://www.duckfrens.com/_next/image?url=%2Fimages%2Fsocials%2FTwitter.svg&w=32&q=75"
-                  alt="twitter"
-                />
+                <img src={twitter} alt="twitter" />
               </a>
             </li>
             <li>
               <a src="https://opensea.io/collection/duck-frens" href="#">
-                <img
-                  src="https://www.duckfrens.com/_next/image?url=%2Fimages%2Fsocials%2FOpensea.svg&w=32&q=75"
-                  alt="opensea"
-                />
+                <img src={magicElden} alt="magic-elden" />
               </a>
             </li>
-            <li>
-              <a
-                src="https://etherscan.io/address/0x0E42fb5f6C542a8a027E09eC71380CbB44DBbf5A"
-                href="#">
-                <img
-                  src="https://www.duckfrens.com/_next/image?url=%2Fimages%2Fsocials%2FEtherscan.svg&w=32&q=75"
-                  alt="etherscan"
-                />
-              </a>
-            </li>
-            <div className="close">
-              <div className="close__container">
-                <div className="close__line"></div>
-                <div className="close__line"></div>
-              </div>
-            </div>
           </ul>
+          <nav className="mint">{/* <Button /> */}</nav>
         </div>
         <div className="header__bottom">
           <div className="header__bottom-row d-g gtc-2">
@@ -85,8 +95,10 @@ const Header = () => {
               <h1 className="logo">
                 <img src={logo} alt="logo" />
               </h1>
-              <h2 className="text-border">775 ducks left to migrate!</h2>
-              <div className="progressBar"></div>
+              <h2 className="text-border">{countOfNft} fish left to migrate!</h2>
+              <div className="progressBar">
+                <div style={{ width: `${percentOfProgessBar}%` }}></div>
+              </div>
               <Button />
             </div>
             <div className="header__bottomColumn d-f jc-e">

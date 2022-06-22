@@ -1,9 +1,5 @@
-import App from './App';
-
-import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 
-import { Button } from './components/Button';
 import Header from './components/Header';
 import About from './components/About';
 import Roadmap from './components/Roadmap';
@@ -18,5 +14,16 @@ window.onbeforeunload = function () {
   window.scrollTo(0, 0);
 };
 
-const rootElement = document.getElementById('root');
-ReactDOM.render(<App />, rootElement);
+const App = () => {
+  return (
+    <div className="wrapper">
+      <Header />
+      <About />
+      <Roadmap />
+      <Team />
+      <Footer />
+    </div>
+  );
+};
+
+export default App;

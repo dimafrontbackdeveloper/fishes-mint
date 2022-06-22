@@ -20,8 +20,10 @@ const About = () => {
     let arithmeticSignSecond = '+'; // если -, то полоса движеться влево, если +, то вправо
     let lineWidthFirst; // ширина всей линии
     let lineWidthSecond; // ширина всей линии
+    let isLeftFirstLine = false; // движеться ли первая линия вправо?
+    const indent = 400; // чтобы небыло видно, что полоса заканчиваеться
 
-    // изначально задаем, чтобы полоса двигалась влево
+    // изначально задаем значения движения полос
     lines.forEach((line, ind) => {
       const multiply =
         window.innerWidth > 1024
@@ -32,43 +34,36 @@ const About = () => {
 
       if (ind === 0) {
         lineWidthFirst = (line.children.length + 1) * multiply - window.innerWidth;
-        line.style.transform = `translate(${arithmeticSignFirst}${lineWidthFirst}px,0)`;
+        line.style.transform = `translate(-${lineWidthFirst - indent}px,0)`;
       }
 
       if (ind === 1) {
         lineWidthSecond = (line.children.length + 1) * multiply - window.innerWidth;
-        line.style.transform = `translate(${100}px,0)`;
+        line.style.transform = `translate(${-100}px,0)`;
       }
     });
 
-    // в зависимости от знака, полоса будет двигатся или влево, или вправо
+    // в зависимости от того isLeftFirstLine, будем двигать полосы
     setInterval(() => {
-      if (arithmeticSignFirst === '+') {
-        arithmeticSignFirst = '-';
+      if (isLeftFirstLine === true) {
+        isLeftFirstLine = false;
       } else {
-        arithmeticSignFirst = '+';
-      }
-
-      if (arithmeticSignSecond === '+') {
-        arithmeticSignSecond = '-';
-      } else {
-        arithmeticSignSecond = '+';
+        isLeftFirstLine = true;
       }
 
       lines.forEach((line, ind) => {
-        if (ind === 0) {
-          if (arithmeticSignFirst === '+') {
-            line.style.transform = `translate(${100}px,0)`;
+        // если первая линия движеться влево, та вторая должна вправо и наоборот
+        if (isLeftFirstLine) {
+          if (ind === 0) {
+            line.style.transform = `translate(${-100}px,0)`;
           } else {
-            line.style.transform = `translate(${arithmeticSignFirst}${lineWidthFirst}px,0)`;
+            line.style.transform = `translate(-${lineWidthFirst - indent}px,0)`;
           }
-        }
-
-        if (ind === 1) {
-          if (arithmeticSignSecond === '+') {
-            line.style.transform = `translate(${100}px,0)`;
+        } else {
+          if (ind === 0) {
+            line.style.transform = `translate(-${lineWidthFirst - indent}px,0)`;
           } else {
-            line.style.transform = `translate(${arithmeticSignSecond}${lineWidthSecond}px,0)`;
+            line.style.transform = `translate(${-100}px,0)`;
           }
         }
       });

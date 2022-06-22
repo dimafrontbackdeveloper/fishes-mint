@@ -69,74 +69,35 @@
   // .header__top
 
   &__top {
-    @include adaptiv-value(margin-bottom, 250, 170, 0);
+    @include adaptiv-value(margin-bottom, 220, 170, 0);
+    align-items: end;
 
-    .nav {
-      @include breakpoint(768px) {
-        width: 100%;
-      }
+    .mint {
+      button {
+        @include adaptiv-value(font-size, 24, 18, 0);
+        @include adaptiv-value(line-height, 29, 2, 0);
+        @include adaptiv-value(padding-left, 30, 15, 0);
+        @include adaptiv-value(padding-right, 30, 15, 0);
 
-      ul {
+        @include breakpoint(1024px) {
+          margin: 0 auto;
+        }
+  
         @include breakpoint(768px) {
-          justify-content: space-between;
+          border: 4px solid #000;
         }
-        li {
-          @include adaptiv-value(margin-right, 47, 15, 0);
-          @include adaptiv-value(font-size, 32, 28, 0);
-          line-height: 34px;
-
-          transition: transform 0.1s;
-
-          &:last-child {
-            display: none;
-
-            @include breakpoint(768px) {
-              display: block;
-            }
-          }
-
-          &:hover {
-            transform: $transformScale;
-
-            @include breakpoint(768px) {
-              transform: none;
-            }
-          }
-
-          a {
-            color: inherit;
-          }
-        }
+  
+    
       }
     }
 
     .social {
-      @include breakpoint(768px) {
-        position: fixed;
-        top: 0;
-        left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 6;
-      background: rgb(0, 0, 0); /* Fallback for older browsers without RGBA-support */
-      background: rgba(0, 0, 0, 0.95);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
-      }
-
       li {
         margin-right: 38px;
         transition: transform 0.1s;
 
-        @include breakpoint(768px) {
-          margin-right: 0px;
-
-        }
         &:last-of-type {
           margin-right: 0px;
-
-          
         }
 
         &:hover {
@@ -147,12 +108,6 @@
           img {
             width: 32px;
             height: 32px;
-
-            @include breakpoint(768px){
-              width: 76px;
-              height: 76px;
-  
-            }
           }
         }
       }
@@ -220,8 +175,6 @@
 
   &__bottomColumn {
     &:first-child {
-      @include adaptiv-value(padding-top, 200, 0, 0);
-
       @include breakpoint(1024px) {
         text-align: center;
         position: relative;
@@ -264,30 +217,21 @@
         border: 4px solid #000;
       }
 
-      &::before {
-        content: '';
-        display: block;
+      div{
         background: #f23d3d;
-        width: 20%;
         height: 100%;
       }
     }
 
+    .wallet-adapter-dropdown{
+      display: block;
+    }
+    
     button {
-      display: flex;
-      width: 100%;
-      @include adaptiv-value(height, 47, 26, 0);
-      border: 5px solid #000;
-      @include adaptiv-value(border-radius, 14, 7, 0);
-      background: #fff;
-      @include adaptiv-value(font-size, 24, 18, 0);
-      @include adaptiv-value(line-height, 29, 2, 0);
-      color: #181818;
-      transform: scale(100%);
-      transition: transform 0.2s;
-      cursor: pointer;
       max-width: 420px;
-      background-image: none !important;
+      width: 100%;
+      @include adaptiv-value(font-size, 32, 18, 0);
+      @include adaptiv-value(line-height, 37, 2, 0);
 
 
       @include breakpoint(1024px) {
@@ -297,15 +241,9 @@
       @include breakpoint(768px) {
         border: 4px solid #000;
       }
-
-      &:hover {
-        transform: $transformScale;
-        background-image: none;
-
-        @include breakpoint(768px) {
-          transform: none;
-        }
-      }
+    }
+    .disabled{
+      display: none;
     }
   }
 
@@ -649,7 +587,7 @@
       left: 45%;
       width: 150px;
       transform: translate(0px, -45px);
-      transition: transform 0.25s linear;
+      transition: transform 0.3s linear;
       animation: 0.5s linear 0s infinite alternate swimming-fish;
       z-index: 1;
 
